@@ -10,6 +10,7 @@ const state = {
   category: null,        // "food" | "boba" | "dessert"
   userPos: null,         // { lat, lon } once geolocation resolves
   lastPick: null,        // name of the previous pick (avoid repeats)
+  pendingPick: null,     // capsule that rolled out, waiting to be pressed open
   spinning: false,
   sound: load("sound", true),
   favorites: load("favorites", []),
@@ -30,6 +31,7 @@ const el = {
   favBtn: $("#favBtn"),
   favoritesCard: $("#favoritesCard"),
   favoritesList: $("#favoritesList"),
+  placeList: $("#placeList"),
   soundToggle: $("#soundToggle"),
   themeToggle: $("#themeToggle"),
   confetti: $("#confetti"),
@@ -52,11 +54,16 @@ function init() {
   setSound(state.sound);
   fillDome();
   renderFavorites();
+  renderPlaceList();
 
   el.catButtons.forEach((btn) =>
     btn.addEventListener("click", () => selectCategory(btn.dataset.category))
   );
   el.spinBtn.addEventListener("click", spin);
+  el.prizeCapsule.addEventListener("click", openCapsule);
+  el.prizeCapsule.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openCapsule(); }
+  });
   el.favBtn.addEventListener("click", saveCurrentFavorite);
   el.soundToggle.addEventListener("click", () => setSound(!state.sound));
   el.themeToggle.addEventListener("click", toggleTheme);
@@ -162,25 +169,35 @@ async function spin() {
   await wait(900);
   el.machine.classList.remove("shaking");
 
-  // Capsule rolls out (food name tucked inside).
+  // Closed capsule rolls out and waits for the user to press it open.
   el.prizeText.innerHTML = `<span>${escapeHtml(pick.name)}</span>`;
+  state.pendingPick = pick;
   el.prizeCapsule.hidden = false;
   el.prizeCapsule.classList.add("rollout");
   beep(520, 0.1);
   await wait(900);
 
-  // Pop it open + celebrate.
-  el.prizeCapsule.classList.add("open");
-  popChord();
-  burstConfetti();
-  await wait(400);
+  el.prizeCapsule.classList.add("ready");
+  el.prizeCapsule.setAttribute("tabindex", "0");
+  el.result.innerHTML = `<span class="sub">👆 Tap the capsule to open it!</span>`;
 
-  showResult(pick);
-  state.lastPick = pick.name;
   state.spinning = false;
   el.machine.classList.remove("coin-drop", "cranking");
   el.spinBtn.disabled = false;
   el.spinBtn.textContent = "Spin Again";
+}
+
+/** Press the capsule to crack it open and reveal the place. */
+function openCapsule() {
+  if (!state.pendingPick || el.prizeCapsule.classList.contains("open")) return;
+  const pick = state.pendingPick;
+  el.prizeCapsule.classList.remove("ready");
+  el.prizeCapsule.classList.add("open");
+  popChord();
+  burstConfetti();
+  showResult(pick);
+  state.lastPick = pick.name;
+  state.pendingPick = null;
 }
 
 /** Pick randomly, avoiding an immediate repeat when possible. */
@@ -207,8 +224,10 @@ function showResult(pick) {
 }
 
 function resetCapsule() {
-  el.prizeCapsule.classList.remove("rollout", "open");
+  el.prizeCapsule.classList.remove("rollout", "open", "ready");
+  el.prizeCapsule.removeAttribute("tabindex");
   el.prizeCapsule.hidden = true;
+  state.pendingPick = null;
   el.machine.classList.remove("coin-drop", "cranking", "shaking");
 }
 
@@ -268,6 +287,31 @@ function renderFavorites() {
 function categoryEmoji(cat) {
   return { food: "🍜", boba: "🧋", dessert: "🍰" }[cat] || "🍽️";
 }
+
+// ============================================================
+// Browsable list of every place (collapsible <details>, one per category)
+// ============================================================
+function renderPlaceList() {
+  el.placeList.innerHTML = Object.entries(RESTAURANTS)
+    .map(([cat, places]) => {
+      const items = places
+        .map((p) => {
+          const meta = [p.rating ? "⭐ " + p.rating : "", p.notes || ""]
+            .filter(Boolean).join(" · ");
+          return `<li><span>${escapeHtml(p.name)}</span>` +
+            (meta ? `<small>${escapeHtml(meta)}</small>` : "") + `</li>`;
+        })
+        .join("");
+      return (
+        `<details>` +
+        `<summary>${categoryEmoji(cat)} ${cap(cat)} <span class="count">${places.length}</span></summary>` +
+        `<ul>${items}</ul></details>`
+      );
+    })
+    .join("");
+}
+
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
 // ============================================================
 // Theme + sound toggles

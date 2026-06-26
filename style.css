@@ -291,16 +291,24 @@ body {
 }
 .prize span {
   display: inline-block;
-  padding: 8px 12px; max-width: 150px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.95);
+  padding: 14px 16px; min-width: 108px; max-width: 150px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.97);
   box-shadow: 0 6px 16px rgba(0,0,0,0.2);
   font-family: "Baloo 2", cursive; font-weight: 800;
-  font-size: 0.95rem; line-height: 1.1; color: var(--accent);
+  font-size: 1.05rem; line-height: 1.15; color: var(--accent);
 }
 .prize-capsule.open .prize { animation: prizePop 0.5s 0.25s ease forwards; }
 @keyframes prizePop {
   to { opacity: 1; transform: scale(1); }
+}
+
+/* Closed capsule waiting to be pressed: pointer + pulsing glow */
+.prize-capsule.ready { cursor: pointer; }
+.prize-capsule.ready .half { animation: capGlow 1.2s ease-in-out infinite; }
+@keyframes capGlow {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(255,93,143,0)); }
+  50%      { filter: drop-shadow(0 0 12px rgba(255,93,143,0.85)); }
 }
 
 /* ---------- Controls ---------- */
@@ -352,6 +360,37 @@ body {
 .favorites li button {
   border: none; background: none; cursor: pointer; font-size: 1rem; color: var(--muted);
 }
+
+/* ---------- The List (collapsible per category) ---------- */
+.place-list h2 { margin: 0 0 10px; font-family: "Baloo 2"; font-size: 1.1rem; }
+.place-list details {
+  border-radius: 12px; overflow: hidden; margin-bottom: 8px;
+  background: rgba(255,255,255,0.35);
+}
+[data-theme="dark"] .place-list details { background: rgba(255,255,255,0.06); }
+.place-list summary {
+  cursor: pointer; padding: 11px 14px; list-style: none;
+  font-family: "Baloo 2", cursive; font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+}
+.place-list summary::-webkit-details-marker { display: none; }
+.place-list summary::before { content: "▸"; transition: transform 0.2s ease; color: var(--muted); }
+.place-list details[open] summary::before { transform: rotate(90deg); }
+.place-list .count {
+  margin-left: auto; font-size: 0.78rem; font-weight: 700;
+  background: var(--accent); color: #fff; border-radius: 999px; padding: 2px 9px;
+}
+.place-list ul {
+  list-style: none; margin: 0; padding: 0 14px 12px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.place-list li {
+  display: flex; flex-direction: column;
+  padding: 8px 12px; border-radius: 10px;
+  background: rgba(255,255,255,0.45);
+}
+[data-theme="dark"] .place-list li { background: rgba(255,255,255,0.05); }
+.place-list li small { color: var(--muted); font-size: 0.78rem; margin-top: 2px; }
 
 /* ---------- Confetti ---------- */
 .confetti {
