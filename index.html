@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Where Should We Eat? 🍜</title>
+  <meta name="description" content="A gachapon machine that picks where you and your friends should eat." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- Top bar: title + toggles -->
+  <header class="topbar">
+    <h1 class="title">Where Should We Eat?</h1>
+    <div class="toggles">
+      <button id="soundToggle" class="icon-btn" title="Toggle sound" aria-pressed="true">🔊</button>
+      <button id="themeToggle" class="icon-btn" title="Toggle dark mode" aria-pressed="false">🌙</button>
+    </div>
+  </header>
+
+  <main class="app">
+    <!-- Category picker -->
+    <section class="card categories" aria-label="Pick a category">
+      <button class="cat-btn" data-category="food"    aria-pressed="false">🍜<span>Food</span></button>
+      <button class="cat-btn" data-category="boba"    aria-pressed="false">🧋<span>Boba</span></button>
+      <button class="cat-btn" data-category="dessert" aria-pressed="false">🍰<span>Dessert</span></button>
+    </section>
+
+    <!-- Distance filter (optional) -->
+    <section class="card filter">
+      <label for="distance">Within</label>
+      <select id="distance">
+        <option value="0">No limit</option>
+        <option value="5">5 miles</option>
+        <option value="10">10 miles</option>
+        <option value="15">15 miles</option>
+        <option value="25">25 miles</option>
+      </select>
+      <span id="locStatus" class="loc-status"></span>
+    </section>
+
+    <!-- The gachapon machine -->
+    <section class="machine-wrap" aria-label="Capsule machine">
+      <div class="machine" id="machine">
+        <!-- Glass dome with capsules inside -->
+        <div class="dome">
+          <div class="capsules" id="capsules"><!-- filled by JS --></div>
+          <!-- The capsule that rolls out and opens -->
+          <div class="prize-capsule" id="prizeCapsule" hidden>
+            <div class="half top"></div>
+            <div class="half bottom"></div>
+            <div class="prize" id="prizeText"></div>
+          </div>
+        </div>
+
+        <!-- Body: coin slot, crank, dispenser -->
+        <div class="body">
+          <div class="coin" id="coin"></div>
+          <div class="slot"></div>
+          <div class="crank" id="crank"><div class="crank-arm"></div></div>
+          <div class="dispenser"><div class="chute" id="chute"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Result + spin controls -->
+    <section class="controls">
+      <div class="result" id="result" aria-live="polite"></div>
+      <button id="spinBtn" class="spin-btn" disabled>Pick a category first</button>
+      <button id="favBtn" class="ghost-btn" hidden>☆ Save favorite</button>
+    </section>
+
+    <!-- Favorites -->
+    <section class="card favorites" id="favoritesCard" hidden>
+      <h2>★ Favorites</h2>
+      <ul id="favoritesList"></ul>
+    </section>
+  </main>
+
+  <!-- Confetti renders here -->
+  <canvas id="confetti" class="confetti"></canvas>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

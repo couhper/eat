@@ -1,0 +1,324 @@
+/* ============================================================
+   Where Should We Eat? — styles
+   Soft gradients, glassmorphism, rounded everything.
+   ============================================================ */
+
+:root {
+  --bg-1: #ffd6e8;
+  --bg-2: #c7ecff;
+  --bg-3: #e6d8ff;
+  --glass: rgba(255, 255, 255, 0.45);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --text: #3a2c4a;
+  --muted: #7a6a8a;
+  --accent: #ff5d8f;
+  --accent-2: #6c8bff;
+  --shadow: 0 10px 30px rgba(80, 40, 90, 0.18);
+  --radius: 22px;
+}
+
+[data-theme="dark"] {
+  --bg-1: #2a1f3d;
+  --bg-2: #1b2a4a;
+  --bg-3: #2d1f44;
+  --glass: rgba(40, 30, 60, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --text: #f2ecff;
+  --muted: #b3a6c9;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Nunito", system-ui, sans-serif;
+  color: var(--text);
+  background: linear-gradient(135deg, var(--bg-1), var(--bg-2) 50%, var(--bg-3));
+  background-attachment: fixed;
+  transition: background 0.6s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+/* ---------- Top bar ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 0;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.title {
+  font-family: "Baloo 2", cursive;
+  font-size: clamp(1.4rem, 6vw, 2.1rem);
+  margin: 0;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.toggles { display: flex; gap: 8px; }
+.icon-btn {
+  border: 1px solid var(--glass-border);
+  background: var(--glass);
+  backdrop-filter: blur(8px);
+  border-radius: 50%;
+  width: 42px; height: 42px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.icon-btn:hover { transform: scale(1.1); }
+
+/* ---------- Layout ---------- */
+.app {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 16px 20px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px;
+}
+
+/* ---------- Categories ---------- */
+.categories { display: flex; gap: 10px; }
+.cat-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 6px;
+  font-size: 1.7rem;
+  font-family: "Baloo 2", cursive;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.35);
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.cat-btn span { font-size: 0.85rem; }
+.cat-btn:hover { transform: translateY(-3px); }
+.cat-btn[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 6px 16px rgba(255, 93, 143, 0.35);
+}
+[data-theme="dark"] .cat-btn { background: rgba(255,255,255,0.06); }
+
+/* ---------- Distance filter ---------- */
+.filter { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.filter label { font-weight: 700; }
+.filter select {
+  font: inherit;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.6);
+  color: var(--text);
+}
+[data-theme="dark"] .filter select { background: rgba(255,255,255,0.08); }
+.loc-status { font-size: 0.8rem; color: var(--muted); flex-basis: 100%; }
+
+/* ---------- Machine ---------- */
+.machine-wrap { display: flex; justify-content: center; padding: 10px 0; }
+.machine { position: relative; width: 240px; }
+
+/* Glass dome */
+.dome {
+  position: relative;
+  height: 200px;
+  border-radius: 50% 50% 18% 18% / 60% 60% 18% 18%;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.25) 60%, rgba(180,200,255,0.25));
+  border: 3px solid rgba(255,255,255,0.8);
+  box-shadow: inset 0 0 30px rgba(255,255,255,0.6), var(--shadow);
+  overflow: hidden;
+}
+
+/* Capsules bouncing inside */
+.capsules { position: absolute; inset: 0; }
+.capsules .ball {
+  position: absolute;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  box-shadow: inset -4px -4px 6px rgba(0,0,0,0.15), inset 3px 3px 5px rgba(255,255,255,0.6);
+}
+.machine.shaking .capsules .ball { animation: jiggle 0.4s ease-in-out infinite; }
+@keyframes jiggle {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(3px, -4px) rotate(8deg); }
+  50% { transform: translate(-3px, 3px) rotate(-6deg); }
+  75% { transform: translate(2px, 4px) rotate(5deg); }
+}
+
+/* Machine body */
+.body {
+  position: relative;
+  margin-top: -6px;
+  height: 150px;
+  border-radius: 18px;
+  background: linear-gradient(160deg, var(--accent), var(--accent-2));
+  box-shadow: var(--shadow);
+}
+.slot {
+  position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+  width: 8px; height: 28px; border-radius: 6px;
+  background: rgba(0,0,0,0.4);
+}
+.coin {
+  position: absolute; top: -28px; left: 50%; transform: translateX(-50%);
+  width: 22px; height: 22px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffe27a, #e0a800);
+  border: 2px solid #c98f00;
+  opacity: 0;
+}
+.machine.coin-drop .coin { animation: coinDrop 0.6s ease-in forwards; }
+@keyframes coinDrop {
+  0% { opacity: 1; top: -50px; }
+  70% { opacity: 1; top: 14px; transform: translateX(-50%) scale(1); }
+  100% { opacity: 0; top: 20px; transform: translateX(-50%) scale(0.4); }
+}
+
+/* Crank */
+.crank {
+  position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+  width: 46px; height: 46px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff, #d9d9e6);
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.2), 0 3px 6px rgba(0,0,0,0.25);
+}
+.crank-arm {
+  position: absolute; top: 50%; left: 50%;
+  width: 6px; height: 18px; border-radius: 4px;
+  background: #8a8aa0; transform-origin: bottom center;
+  transform: translate(-50%, -100%);
+}
+.machine.cranking .crank { animation: spinCrank 0.7s ease-in-out 2; }
+@keyframes spinCrank {
+  from { transform: translateX(-50%) rotate(0deg); }
+  to   { transform: translateX(-50%) rotate(360deg); }
+}
+
+/* Dispenser + chute */
+.dispenser {
+  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+  width: 90px; height: 34px; border-radius: 10px;
+  background: rgba(0,0,0,0.25);
+  display: flex; align-items: center; justify-content: center;
+}
+.chute { width: 70px; height: 4px; border-radius: 4px; background: rgba(0,0,0,0.35); }
+
+/* Prize capsule (rolls out, then opens) */
+.prize-capsule {
+  position: absolute; z-index: 5;
+  left: 50%; bottom: 8px; transform: translateX(-50%) scale(0.5);
+  width: 110px; height: 110px;
+}
+.prize-capsule .half {
+  position: absolute; left: 0; width: 100%; height: 50%;
+  transition: transform 0.5s cubic-bezier(.5,-0.4,.4,1.4);
+}
+.prize-capsule .half.top {
+  top: 0;
+  border-radius: 55px 55px 6px 6px;
+  background: linear-gradient(160deg, #ffd86b, #ff9f43);
+}
+.prize-capsule .half.bottom {
+  bottom: 0;
+  border-radius: 6px 6px 55px 55px;
+  background: linear-gradient(20deg, #ffffff, #e7e7f5);
+}
+/* roll out from chute to center */
+.prize-capsule.rollout { animation: rollOut 0.9s cubic-bezier(.34,1.4,.4,1) forwards; }
+@keyframes rollOut {
+  0%   { transform: translateX(-50%) translateY(60px) scale(0.5) rotate(0deg); opacity: 0; }
+  40%  { opacity: 1; }
+  100% { transform: translateX(-50%) translateY(-150px) scale(1.1) rotate(380deg); opacity: 1; }
+}
+/* open: halves split apart and prize fades in */
+.prize-capsule.open .half.top    { transform: translateY(-60px) rotate(-12deg); }
+.prize-capsule.open .half.bottom { transform: translateY(60px) rotate(12deg); }
+.prize {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; padding: 6px;
+  font-family: "Baloo 2", cursive; font-weight: 800;
+  font-size: 0.95rem; color: var(--accent);
+  opacity: 0; transform: scale(0.5);
+}
+.prize-capsule.open .prize { animation: prizePop 0.5s 0.25s ease forwards; }
+@keyframes prizePop {
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ---------- Controls ---------- */
+.controls { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.result {
+  min-height: 1.4em;
+  font-family: "Baloo 2", cursive;
+  font-size: 1.3rem;
+  text-align: center;
+}
+.result .sub { display: block; font-size: 0.85rem; color: var(--muted); font-family: "Nunito"; }
+
+.spin-btn {
+  font-family: "Baloo 2", cursive;
+  font-size: 1.25rem;
+  padding: 16px 42px;
+  border: none;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  box-shadow: 0 8px 20px rgba(255, 93, 143, 0.45);
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.2s ease;
+}
+.spin-btn:hover:not(:disabled) { transform: translateY(-2px) scale(1.03); }
+.spin-btn:active:not(:disabled) { transform: scale(0.97); }
+.spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.ghost-btn {
+  font: inherit; font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass);
+  color: var(--text);
+  cursor: pointer;
+}
+.ghost-btn:hover { background: rgba(255,255,255,0.6); }
+
+/* ---------- Favorites ---------- */
+.favorites h2 { margin: 0 0 8px; font-family: "Baloo 2"; font-size: 1.1rem; }
+.favorites ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.favorites li {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; border-radius: 12px;
+  background: rgba(255,255,255,0.4);
+}
+[data-theme="dark"] .favorites li { background: rgba(255,255,255,0.06); }
+.favorites li button {
+  border: none; background: none; cursor: pointer; font-size: 1rem; color: var(--muted);
+}
+
+/* ---------- Confetti ---------- */
+.confetti {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 50;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; }
+}
