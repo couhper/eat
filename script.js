@@ -162,8 +162,8 @@ async function spin() {
   await wait(900);
   el.machine.classList.remove("shaking");
 
-  // Capsule rolls out.
-  el.prizeText.textContent = pick.name;
+  // Capsule rolls out (food name tucked inside).
+  el.prizeText.innerHTML = `<span>${escapeHtml(pick.name)}</span>`;
   el.prizeCapsule.hidden = false;
   el.prizeCapsule.classList.add("rollout");
   beep(520, 0.1);
@@ -198,7 +198,7 @@ function showResult(pick) {
   if (pick.rating) bits.push("⭐ " + pick.rating);
   if (pick.notes) bits.push(pick.notes);
   el.result.innerHTML =
-    `Let's eat at <strong>${escapeHtml(pick.name)}</strong>!` +
+    `Let's go to <strong>${escapeHtml(pick.name)}</strong>!` +
     (bits.length ? `<span class="sub">${escapeHtml(bits.join(" · "))}</span>` : "");
   el.favBtn.hidden = false;
   el.favBtn.dataset.name = pick.name;
@@ -216,12 +216,13 @@ function resetCapsule() {
 // Dome of bouncing capsules (decorative)
 // ============================================================
 function fillDome() {
-  const count = 9;
+  // Fill the (bigger) dome so it always looks packed with capsules.
+  const count = 20;
   let html = "";
   for (let i = 0; i < count; i++) {
     const color = BALL_COLORS[i % BALL_COLORS.length];
-    const top = 20 + Math.random() * 130;
-    const left = 15 + Math.random() * 195;
+    const top = 12 + Math.random() * 218;   // dome is ~280px tall, balls 38px
+    const left = 10 + Math.random() * 264;  // dome is ~314px wide
     const delay = (Math.random() * 0.4).toFixed(2);
     html += `<span class="ball" style="background:${color};top:${top}px;left:${left}px;animation-delay:${delay}s"></span>`;
   }

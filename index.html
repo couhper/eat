@@ -44,15 +44,10 @@
     <!-- The gachapon machine -->
     <section class="machine-wrap" aria-label="Capsule machine">
       <div class="machine" id="machine">
-        <!-- Glass dome with capsules inside -->
+        <!-- Glass dome with capsules + the central turning mechanism -->
         <div class="dome">
           <div class="capsules" id="capsules"><!-- filled by JS --></div>
-          <!-- The capsule that rolls out and opens -->
-          <div class="prize-capsule" id="prizeCapsule" hidden>
-            <div class="half top"></div>
-            <div class="half bottom"></div>
-            <div class="prize" id="prizeText"></div>
-          </div>
+          <div class="mechanism"></div>
         </div>
 
         <!-- Body: coin slot, crank, dispenser -->
@@ -61,6 +56,13 @@
           <div class="slot"></div>
           <div class="crank" id="crank"><div class="crank-arm"></div></div>
           <div class="dispenser"><div class="chute" id="chute"></div></div>
+        </div>
+
+        <!-- The capsule that drops out the bottom and opens below the machine -->
+        <div class="prize-capsule" id="prizeCapsule" hidden>
+          <div class="half top"></div>
+          <div class="half bottom"></div>
+          <div class="prize" id="prizeText"></div>
         </div>
       </div>
     </section>

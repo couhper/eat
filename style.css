@@ -15,9 +15,11 @@
   --accent-2: #6c8bff;
   --shadow: 0 10px 30px rgba(80, 40, 90, 0.18);
   --radius: 22px;
+  color-scheme: light;   /* themes native controls (e.g. the distance dropdown) */
 }
 
 [data-theme="dark"] {
+  color-scheme: dark;
   --bg-1: #2a1f3d;
   --bg-2: #1b2a4a;
   --bg-3: #2d1f44;
@@ -134,13 +136,15 @@ body {
 .loc-status { font-size: 0.8rem; color: var(--muted); flex-basis: 100%; }
 
 /* ---------- Machine ---------- */
-.machine-wrap { display: flex; justify-content: center; padding: 10px 0; }
-.machine { position: relative; width: 240px; }
+/* Big bottom padding reserves clear space below the machine where the
+   capsule drops out and opens — keeps it from colliding with the dome. */
+.machine-wrap { display: flex; justify-content: center; padding: 10px 0 170px; }
+.machine { position: relative; width: 320px; }
 
 /* Glass dome */
 .dome {
   position: relative;
-  height: 200px;
+  height: 280px;
   border-radius: 50% 50% 18% 18% / 60% 60% 18% 18%;
   background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.25) 60%, rgba(180,200,255,0.25));
   border: 3px solid rgba(255,255,255,0.8);
@@ -148,13 +152,39 @@ body {
   overflow: hidden;
 }
 
+/* Central turning mechanism (the spiral plate that pushes capsules) */
+.mechanism {
+  position: absolute; top: 52%; left: 50%;
+  width: 110px; height: 110px; margin: -55px 0 0 -55px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg,
+    var(--accent), var(--accent-2), #ffd86b, #4ecdc4, #c77dff, var(--accent));
+  box-shadow: inset 0 0 16px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.25);
+  z-index: 4;
+  opacity: 0.9;
+}
+.mechanism::before {
+  content: ""; position: absolute; inset: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 38%, #fff, #e7e7f5);
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.2);
+}
+.mechanism::after {
+  content: ""; position: absolute; top: 50%; left: 50%;
+  width: 10px; height: 10px; margin: -5px 0 0 -5px;
+  border-radius: 50%; background: #8a8aa0;
+}
+.machine.cranking .mechanism,
+.machine.shaking .mechanism { animation: spinMech 0.8s linear infinite; }
+@keyframes spinMech { to { transform: rotate(360deg); } }
+
 /* Capsules bouncing inside */
 .capsules { position: absolute; inset: 0; }
 .capsules .ball {
   position: absolute;
-  width: 30px; height: 30px;
+  width: 38px; height: 38px;
   border-radius: 50%;
-  box-shadow: inset -4px -4px 6px rgba(0,0,0,0.15), inset 3px 3px 5px rgba(255,255,255,0.6);
+  box-shadow: inset -5px -5px 7px rgba(0,0,0,0.15), inset 4px 4px 6px rgba(255,255,255,0.6);
 }
 .machine.shaking .capsules .ball { animation: jiggle 0.4s ease-in-out infinite; }
 @keyframes jiggle {
@@ -168,8 +198,8 @@ body {
 .body {
   position: relative;
   margin-top: -6px;
-  height: 150px;
-  border-radius: 18px;
+  height: 180px;
+  border-radius: 22px;
   background: linear-gradient(160deg, var(--accent), var(--accent-2));
   box-shadow: var(--shadow);
 }
@@ -220,43 +250,53 @@ body {
 }
 .chute { width: 70px; height: 4px; border-radius: 4px; background: rgba(0,0,0,0.35); }
 
-/* Prize capsule (rolls out, then opens) */
+/* Prize capsule — drops out the dispenser to the clear space BELOW the
+   machine, then opens there so nothing overlaps the dome. */
 .prize-capsule {
-  position: absolute; z-index: 5;
-  left: 50%; bottom: 8px; transform: translateX(-50%) scale(0.5);
-  width: 110px; height: 110px;
+  position: absolute; z-index: 20;
+  left: 50%; bottom: 14px; transform: translateX(-50%) scale(0.5);
+  width: 130px; height: 130px;
 }
 .prize-capsule .half {
   position: absolute; left: 0; width: 100%; height: 50%;
   transition: transform 0.5s cubic-bezier(.5,-0.4,.4,1.4);
+  box-shadow: inset -6px -6px 10px rgba(0,0,0,0.12), inset 5px 5px 8px rgba(255,255,255,0.5);
 }
 .prize-capsule .half.top {
   top: 0;
-  border-radius: 55px 55px 6px 6px;
+  border-radius: 65px 65px 8px 8px;
   background: linear-gradient(160deg, #ffd86b, #ff9f43);
 }
 .prize-capsule .half.bottom {
   bottom: 0;
-  border-radius: 6px 6px 55px 55px;
+  border-radius: 8px 8px 65px 65px;
   background: linear-gradient(20deg, #ffffff, #e7e7f5);
 }
-/* roll out from chute to center */
-.prize-capsule.rollout { animation: rollOut 0.9s cubic-bezier(.34,1.4,.4,1) forwards; }
+/* roll DOWN out of the dispenser into the open space under the machine */
+.prize-capsule.rollout { animation: rollOut 0.9s cubic-bezier(.34,1.3,.5,1) forwards; }
 @keyframes rollOut {
-  0%   { transform: translateX(-50%) translateY(60px) scale(0.5) rotate(0deg); opacity: 0; }
-  40%  { opacity: 1; }
-  100% { transform: translateX(-50%) translateY(-150px) scale(1.1) rotate(380deg); opacity: 1; }
+  0%   { transform: translateX(-50%) translateY(0) scale(0.5) rotate(0deg); opacity: 0; }
+  35%  { opacity: 1; }
+  100% { transform: translateX(-50%) translateY(150px) scale(1.15) rotate(400deg); opacity: 1; }
 }
-/* open: halves split apart and prize fades in */
-.prize-capsule.open .half.top    { transform: translateY(-60px) rotate(-12deg); }
-.prize-capsule.open .half.bottom { transform: translateY(60px) rotate(12deg); }
+/* open: halves split apart, prize sits in the middle */
+.prize-capsule.open .half.top    { transform: translateY(-52px) rotate(-12deg); }
+.prize-capsule.open .half.bottom { transform: translateY(52px) rotate(12deg); }
 .prize {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
-  text-align: center; padding: 6px;
+  text-align: center;
+  z-index: 1;                 /* above the bottom half so the name is readable */
+  opacity: 0; transform: scale(0.4);
+}
+.prize span {
+  display: inline-block;
+  padding: 8px 12px; max-width: 150px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
   font-family: "Baloo 2", cursive; font-weight: 800;
-  font-size: 0.95rem; color: var(--accent);
-  opacity: 0; transform: scale(0.5);
+  font-size: 0.95rem; line-height: 1.1; color: var(--accent);
 }
 .prize-capsule.open .prize { animation: prizePop 0.5s 0.25s ease forwards; }
 @keyframes prizePop {
